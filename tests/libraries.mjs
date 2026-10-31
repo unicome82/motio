@@ -1,0 +1,17 @@
+import assert from 'node:assert/strict';
+import { readSource } from './helpers.mjs';
+const source = await readSource(new URL('../js/core/libraries.js',import.meta.url),'utf8');
+const timers = new Map();let id=0;const scripts=[];
+globalThis.setTimeout = callback => { timers.set(++id,callback);return id; };
+globalThis.clearTimeout = key => timers.delete(key);
+globalThis.window = {};
+globalThis.document = {createElement:()=>({remove(){this.removed=true;}}),head:{append:script=>scripts.push(script)}};
+const {loadMatter}=await import('data:text/javascript;base64,'+Buffer.from(source).toString('base64'));
+const first=loadMatter();assert.equal(loadMatter(),first);const failure=assert.rejects(first,/초과/);
+const late=scripts[0].onload;timers.get(1)();await failure;
+assert.equal(scripts[0].removed,true);
+const second=loadMatter();assert.notEqual(second,first);late();assert.equal(scripts[1].removed,undefined);
+const network=assert.rejects(second,/실패/);scripts[1].onerror();await network;
+const third=loadMatter();window.Matter={version:'0.20.0'};scripts[2].onload();
+assert.equal(await third,window.Matter);assert.equal(timers.size,0);assert.equal(await loadMatter(),window.Matter);
+console.log('PASS: shared library request, 12s timeout/retry, network retry, stale response and timer cleanup.');

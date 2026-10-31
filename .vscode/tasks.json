@@ -1,0 +1,27 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "PHYSICS LAB: 로컬 서버",
+      "type": "process",
+      "command": "python3",
+      "args": [
+        "-u",
+        "-m",
+        "http.server",
+        "8000",
+        "--bind",
+        "127.0.0.1",
+        "--directory",
+        "${workspaceFolder}"
+      ],
+      "isBackground": true,
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated",
+        "clear": false
+      }
+    }
+  ]
+}

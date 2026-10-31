@@ -1,0 +1,603 @@
+@use 'reset';
+@use 'variable' as *;
+@use 'mixin' as *;
+
+/* Shared shell */
+html { height: 100%; }
+
+body {
+  @include flex(stretch, $gap: 0, $direction: column);
+  height: 100dvh;
+  min-height: 100svh;
+  background: $background;
+  color: $ink;
+  font-family: $font-family;
+  @include font;
+  line-height: 1.4;
+  @include tablet { &.is-experiment { height: auto; min-height: 100dvh; } }
+}
+
+.page-width {
+  width: 100%;
+  margin-inline: auto;
+  container-type: inline-size;
+}
+
+.header {
+  color: $ink;
+  overflow: hidden;
+  transition: transform .2s ease, opacity .2s ease;
+  &.is-scroll-hidden { transform: translateY(-100%); opacity: 0; }
+  @media (prefers-reduced-motion: reduce) { transition: none; }
+
+  @include flex($justify: space-between);
+  flex-shrink: 0;
+  height: $header-height;
+  padding-inline: $page-padding;
+  pointer-events: none;
+  @include mobile {
+    height: $mobile-header-height;
+    padding-inline: $mobile-padding;
+  }
+}
+
+.logo {
+  pointer-events: auto;
+  @include font($text-title, $weight: $font-weight-black, $tracking: -.02em);
+  white-space: nowrap;
+  padding-block: $space-2;
+
+  @include mobile {
+    font-size: $text-body;
+  }
+}
+
+main {
+  @include flex(stretch, $gap: 0, $direction: column);
+  position: relative;
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  overflow-anchor: none;
+  padding-inline: $page-padding;
+  @include mobile { padding-inline: $mobile-padding; }
+  :where(body:not(.is-experiment)) & { z-index: 1; }
+  :where(body.is-experiment) & {
+    min-height: 0;
+    padding-bottom: $space-4;
+    @include tablet { flex: none; min-height: 100dvh; overflow: visible; }
+  }
+}
+
+.copyright {
+  @include font(clamp(.625rem, .75cqw, .6875rem), 300, $tracking: $copy-tracking);
+  display: block;
+  margin-top: $space-2;
+  white-space: nowrap;
+}
+
+.skip-link {
+  @include position(fixed, -5rem auto auto 1.25rem);
+  padding: $space-3 $space-5;
+  background: $ink;
+  color: $background;
+  z-index: 20;
+
+  &:focus { top: $space-3; }
+}
+
+.text-link {
+  @include flex($gap: $space-3, $display: inline-flex);
+  min-height: $touch-target;
+  font-size: $text-sm;
+}
+
+.eyebrow {
+  @include font($text-xs, $tracking: .12em);
+  display: block;
+
+  :where(.scene-info) & {
+    padding-bottom: $space-4;
+    border-bottom: $hairline solid $line;
+    @include mobile { display: none; }
+  }
+}
+
+/* Landing */
+.hero {
+  @include grid(minmax(0, 1fr) minmax(0, 1.15fr), $space-4);
+  flex: 1;
+  min-height: 0;
+  grid-template-rows: minmax(0, 1fr);
+  container-type: size;
+  position: relative;
+
+  h1 {
+    @include font(clamp(2.4rem, min(9.336cqw, 19.2cqh), 8.4rem), $font-weight-black, $tracking: $heading-tracking);
+    position: relative;
+    z-index: 1;
+    @include mobile {
+      width: 100%;
+      font-size: clamp(2.5rem, 21cqw, 10rem);
+    }
+  }
+
+  &-copy {
+    @include flex(flex-start, center, 0, column);
+    grid-column: 1 / -1;
+    color: $ink;
+    z-index: 1;
+    min-width: 0;
+    position: relative;
+    pointer-events: none;
+    padding-block: $space-6;
+    @include mobile {
+      padding-block: $space-4;
+    }
+  }
+
+  &-actions {
+    @include flex(center, space-between, $space-20 $space-6);
+    width: 100%;
+    flex-wrap: wrap;
+    margin-top: $space-10;
+    position: relative;
+    z-index: 1;
+    p { @include font($text-body, $tracking: $copy-tracking); }
+    @include mobile {
+      margin-top: $space-6;
+      p { font-size: $text-sm; }
+    }
+  }
+
+  &-art {
+    @include position(fixed);
+    z-index: 0;
+    :where(body.is-experiment) & { display: none; }
+    pointer-events: none;
+    canvas { @include position; pointer-events: auto; touch-action: auto; }
+    svg { width: 100%; height: 100%; }
+  }
+
+  &[hidden] { display: none; }
+}
+
+.cta {
+  position: relative;
+  flex-shrink: 0;
+  z-index: 1;
+  @include flex($gap: $space-5, $display: inline-flex);
+  @include font($text-action-label, $font-weight-bold, $tracking: .12em);
+  min-height: 3rem;
+  padding: $space-3 $space-5;
+  border: $hairline solid $black;
+  border-radius: 999rem;
+  background: $black;
+  color: $surface;
+  pointer-events: auto;
+  &:hover { background: rgba($black, .8); }
+  @include mobile { gap: $space-3; font-size: .6875rem; }
+}
+
+.circle-arrow {
+  font-family: 'Material Symbols Outlined';
+  font-size: fluid(1.25rem, 1.5rem);
+  font-weight: 400;
+  font-style: normal;
+  letter-spacing: normal;
+  text-transform: none;
+  white-space: nowrap;
+  font-feature-settings: 'liga';
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Static experiment previews */
+.experiment-preview {
+  @each $name, $color in $palette-colors {
+    .fill-#{$name} { fill: $color; }
+    .stroke-#{$name} { stroke: $color; }
+  }
+}
+
+.section-heading {
+  @include flex(baseline, space-between);
+  margin-bottom: $space-5;
+  padding-top: $space-3;
+
+  h2 { @include font($text-action-label, $font-weight-bold, $tracking: .12em); }
+  @include mobile { align-items: flex-start; flex-direction: column; gap: $space-1; }
+  :where(body.is-experiment) & { display: none; }
+}
+
+.experiment-list {
+  @include flex(stretch, $gap: $space-4);
+  min-width: 0;
+  margin-inline: calc(-1 * #{$page-padding});
+  padding-inline: $page-padding;
+  padding-block: 0 calc(#{$space-4} * 2);
+  scroll-padding-inline: $page-padding;
+  scrollbar-width: none;
+  &::-webkit-scrollbar { display: none; }
+  @include tablet {
+    overflow-x: auto;
+    padding-block: 2rem calc(2rem + #{$space-4} * 2);
+    margin-block: -2rem;
+  }
+  @include mobile {
+    margin-inline: 0;
+    padding-inline: $mobile-padding;
+    scroll-padding-inline: $mobile-padding;
+    :where(body:not(.is-experiment)) & { margin-inline: calc(-1 * #{$mobile-padding}); }
+  }
+  > li {
+    flex: 1 1 0;
+    min-width: 0;
+    @include tablet { flex: 0 0 8rem; }
+    @include mobile { flex-basis: calc((100% - #{$space-4} * 2) / 2.6); }
+  }
+  :where(body.is-experiment) & {
+    width: 100%;
+    margin-inline: 0;
+    padding-top: $space-3;
+    @include tablet { padding-top: calc(2rem + #{$space-3}); }
+    @include mobile { padding-block: calc(2rem + #{$space-2}); }
+  }
+  :where(.index-section.is-compact) & {
+    gap: $space-2;
+    padding-block: $space-2;
+    margin-block: 0;
+    > li { flex: 0 0 auto; }
+    overflow-x: auto;
+  }
+}
+
+.experiment-card {
+  @include grid(auto minmax(0, 1fr), $space-2, baseline);
+  @include font($text-xs, $font-weight-bold);
+  align-content: start;
+  height: 100%;
+  padding: $space-4 $space-3 $space-2;
+  background: rgba($surface, .72);
+  -webkit-backdrop-filter: blur($backdrop-blur);
+  backdrop-filter: blur($backdrop-blur);
+  border: $hairline solid transparent;
+  border-radius: clamp(.75rem, 1.2cqw, 1.25rem);
+
+  transition: transform $thumbnail-transition-duration ease, box-shadow $thumbnail-transition-duration ease,
+    row-gap $thumbnail-transition-duration ease;
+  @media (hover: hover) {
+    &:hover { transform: translateY(-.25rem); box-shadow: 0 .5rem 1.5rem rgba($black, .14); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+    &:hover { transform: none; }
+  }
+  &[aria-selected='true'] { border-color: $ink; }
+
+  svg {
+    grid-column: 1 / -1;
+    width: 100%;
+    height: clamp(3rem, 14dvh, 9rem);
+    transition: height $thumbnail-transition-duration ease;
+    @media (prefers-reduced-motion: reduce) { transition: none; }
+    align-self: end;
+    :where(body.is-experiment) & { height: clamp(2.5rem, 4cqw, 3.5rem); }
+    @include tablet { height: 3rem; }
+    :where(.index-section.is-compact) & { height: 0;opacity:0; overflow: hidden; }
+  }
+
+  :where(body.is-experiment) & { padding: $space-3; }
+  @include tablet { padding: $space-3; }
+  :where(.index-section.is-compact) & {
+    padding: $space-3;
+    row-gap: 0;
+    border-radius: 999rem;
+    background: $surface;
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+    &:hover { transform: none; box-shadow: none; }
+  }
+}
+
+.card-title {
+  min-width: 0;
+  h3 {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
+
+.index-section {
+  flex-shrink: 0;
+  min-width: 0;
+}
+
+.experiment-viewport {
+  @include flex(stretch, $gap: $space-3, $direction: column);
+  flex-shrink: 0;
+  min-width: 0;
+  :where(body.is-experiment) & {
+    margin-inline: calc(-1 * #{$page-padding});
+    padding-bottom: $space-3;
+    background: $background;
+    @include tablet { position: sticky; top: 0; z-index: 4; }
+    @include mobile { margin-inline: calc(-1 * #{$mobile-padding}); }
+    @media (max-height: 32rem) and (orientation: landscape) { position: static; }
+  }
+}
+
+.experiment-panel {
+  @include flex(stretch, $gap: 0, $direction: column);
+  flex: 1;
+  min-height: 0;
+  min-width: 0;
+  &[hidden] { display: none; }
+  @include tablet { flex: none; }
+}
+
+/* Experiment shell */
+.scene {
+  @include flex(stretch, $gap: 0, $direction: column);
+  flex: 1;
+  min-height: 0;
+  padding-top: $space-6;
+
+  &-layout {
+    @include grid(minmax(10rem, 1fr) minmax(0, 3fr) minmax(10rem, 1fr), $space-6);
+    flex: 1;
+    grid-template-rows: minmax(0, 1fr);
+    min-height: 0;
+    @include tablet {
+      grid-template-columns: minmax(0, 2fr) minmax(9rem, 1fr);
+      grid-template-rows: auto auto;
+      flex: none;
+    }
+    @include mobile {
+      @include flex(stretch, $gap: $space-5, $direction: column);
+    }
+    > aside {
+      padding-top: $space-4;
+      overflow-y: auto;
+      @include tablet { overflow: visible; }
+      @include mobile { padding: 0; }
+    }
+
+  }
+
+  &-info {
+    @include tablet {
+      @include position(absolute, 0 auto auto 0);
+      padding: $space-5;
+      z-index: 1;
+      width: min(24rem, calc(100% - 6rem));
+      max-height: calc(100% - #{$space-5} * 2);
+      overflow-y: auto;
+      pointer-events: none;
+      transition: opacity .2s ease;
+      @media (prefers-reduced-motion: reduce) { transition: none; }
+      :where(.canvas-region.is-canvas-hovered, .canvas-region.is-canvas-touched) & { opacity: 0; }
+    }
+
+    h1 {
+      @include font($text-title, $font-weight-bold, $tracking: $heading-tracking);
+      overflow-wrap: anywhere;
+    }
+
+    h2 {
+      font-size: $text-xs;
+    }
+
+    p {
+      @include muted-copy;
+      @include mobile { margin-top: $space-3; font-size: $text-xs; }
+    }
+
+    @include mobile { order: 1; }
+  }
+
+  &-heading {
+    @include flex(baseline, $gap: $space-3);
+    flex-wrap: wrap;
+    margin-block: $space-4;
+    @include tablet { margin-top: 0; }
+  }
+
+  &-controls {
+    @include grid(minmax(0, 1fr) minmax(0, 1.4fr), $space-1 $space-3);
+    align-content: start;
+    min-width: 0;
+    overflow-wrap: anywhere;
+    > * { grid-column: 1 / -1; }
+    label { font-size: $text-xs; }
+    > label { grid-column: 1; align-self: center; }
+    > .control-button { margin-top: $space-2; }
+    > input, > select {
+      grid-column: 2;
+      min-width: 0;
+      margin-top: 0;
+    }
+
+    h2 {
+      border-bottom: $hairline solid $line;
+      padding-bottom: $space-4;
+      margin-bottom: $space-5;
+      @include mobile { margin-bottom: $space-3; }
+    }
+
+    :where(p) { color: $muted; }
+    @include tablet { grid-column: 2; }
+    @include mobile { grid-column: auto; }
+  }
+
+  @include mobile { padding-top: $space-3; }
+}
+
+.instructions {
+  margin-top: $space-10;
+  font-size: $text-xs;
+  dt { margin-top: $space-5; }
+  dd { margin: $space-1 0 0; color: $muted; }
+  @include mobile { display: none; }
+}
+
+.keyboard-note {
+  @include mobile { display: none; }
+}
+
+.canvas-region {
+  position: relative;
+  height: 100%;
+  min-height: 0;
+  background: $surface;
+  @include tablet {
+    height: max(20rem, 55dvh);
+    @include flex(stretch, flex-end, 0, column);
+    > canvas {
+      flex-shrink: 0;
+    }
+  }
+  @include mobile {
+    align-self: stretch;
+    flex-shrink: 0;
+    height: 40dvh;
+    min-height: 12rem;
+  }
+}
+
+canvas { width: 100%; height: 100%; touch-action: none; }
+
+.canvas-actions {
+  @include position(absolute, 0 0 auto auto);
+  @include flex(center, $gap: $space-2);
+  z-index: 2;
+}
+
+.canvas-reset {
+  min-width: $touch-target;
+  min-height: $touch-target;
+  @include flex(center, center, 0);
+  color: $ink;
+  transition: transform .12s ease;
+  &:active { transform: scale(1.15); }
+  @media (prefers-reduced-motion: reduce) { transition: none; }
+}
+
+.canvas-remove {
+  @include position(absolute, auto);
+  transform: translate(-50%, -50%);
+  @include flex(center, center, 0);
+  width: $touch-target;
+  height: $touch-target;
+  z-index: 3;
+  color: $surface;
+  background: transparent;
+  &::before {
+    content: '';
+    @include position(absolute, 25%);
+    border-radius: 50%;
+    background: $ink;
+    z-index: -1;
+  }
+  &[hidden] { display: none; }
+  .circle-arrow { font-size: .75rem; }
+}
+
+.canvas-status {
+  @include position;
+  @include flex($justify: center, $gap: $space-3, $direction: column);
+  @include font($text-xs, $tracking: .16em);
+  pointer-events: none;
+  color: $muted;
+  text-align: center;
+  span { font-size: $text-body; letter-spacing: normal; }
+}
+
+.control-actions {
+  @include flex(stretch, $gap: $space-3);
+  flex-wrap: wrap;
+  min-width: 0;
+  > .control-button {
+    flex: 1 1 8rem;
+    min-width: 0;
+    width: auto;
+    margin-top: 0;
+  }
+  > [data-gravity-add] {
+    flex: 0 0 $touch-target;
+    width: $touch-target;
+    height: $touch-target;
+  }
+  > [data-gravity-add='box'] {
+    flex-basis: calc(#{$touch-target} * .85);
+    width: calc(#{$touch-target} * .85);
+    height: calc(#{$touch-target} * .85);
+    min-height: 0;
+    align-self: center;
+  }
+  &:has(.shape-size) { flex-wrap: nowrap; }
+}
+
+.shape-size {
+  @include flex(center, $gap: $space-2);
+  flex: 0 0 calc((100% - #{$space-3}) / 2.4 * 1.4);
+  margin-left: auto;
+  min-width: 0;
+  &[hidden] { display: none; }
+  label { flex-shrink: 0; }
+  > .control-button { flex: 1 1 0; width: 0; min-width: 0; margin: 0; }
+}
+
+.control-button {
+  min-height: $touch-target;
+  display: block;
+  width: 100%;
+  margin-top: $space-4;
+  border: $hairline solid $line;
+  text-align: center;
+  font-size: $text-sm;
+  &[data-gravity-add] {
+    @include flex(center, center, 0);
+    background: $black;
+    color: $surface;
+    border-color: $black;
+    font-size: 1.5rem;
+  }
+  &[data-gravity-add='circle'] { border-radius: 50%; }
+  &[type='range'] {
+    appearance: none;
+    -webkit-appearance: none;
+    height: 1.5rem;
+    min-height: 1.5rem;
+    margin-top: $space-1;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    cursor: pointer;
+    &::-webkit-slider-runnable-track { height: .0625rem; background: rgba($black, .5); border-radius: 999rem; }
+    &::-moz-range-track { height: .0625rem; background: rgba($black, .5); border-radius: 999rem; }
+    &::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: .625rem;
+      height: .625rem;
+      margin-top: -.28125rem;
+      border: 0;
+      border-radius: 50%;
+      background: $ink;
+    }
+    &::-moz-range-thumb { width: .625rem; height: .625rem; border: 0; border-radius: 50%; background: $ink; }
+  }
+  &[aria-pressed='true'] { background: $ink; color: $surface; }
+  @include mobile {
+    margin-top: $space-3;
+    &[type='range'] { margin-top: $space-1; }
+  }
+}
+
+.control-note {
+  font-size: $text-xs;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+}

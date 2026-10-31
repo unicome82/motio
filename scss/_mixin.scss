@@ -1,0 +1,43 @@
+@use 'variable' as *;
+
+/* Layout and typography */
+@mixin flex($align: center, $justify: flex-start, $gap: $space-4, $direction: row, $display: flex) {
+  display: $display;
+  align-items: $align;
+  justify-content: $justify;
+  gap: $gap;
+  flex-direction: $direction;
+}
+
+@mixin grid($columns: minmax(0, 1fr), $gap: $space-4, $align: stretch) {
+  display: grid;
+  grid-template-columns: $columns;
+  gap: $gap;
+  align-items: $align;
+}
+
+@mixin position($type: absolute, $inset: 0) {
+  position: $type;
+  inset: $inset;
+}
+
+@mixin font($size: $text-body, $weight: 400, $line: null, $tracking: normal) {
+  font-size: $size;
+  font-weight: $weight;
+  @if $line != null { line-height: $line; }
+  letter-spacing: $tracking;
+}
+
+@mixin muted-copy($size: $text-sm, $line: null) {
+  @include font($size, 400, $line);
+  color: $muted;
+}
+
+/* Component-local responsive rules */
+@mixin tablet {
+  @media (max-width: 63.9375rem) { @content; }
+}
+
+@mixin mobile {
+  @media (max-width: 47.9375rem) { @content; }
+}

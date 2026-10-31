@@ -1,0 +1,75 @@
+@use 'sass:math';
+
+/* Design tokens — design/tokens.json */
+$background: #F5F2E9;
+$surface: #FBF9F3;
+$ink: #171717;
+$muted: rgba($ink, .58);
+$line: #C9C4BA;
+$terracotta: #D94F35;
+$blue: #245C91;
+$mustard: #E5AA27;
+$green: #368564;
+$sand: #C9C1B3;
+$black: #1B1B1B;
+$backdrop-blur: .5rem;
+$thumbnail-transition-duration: .2s;
+
+$palette-colors: (
+  "background": $background,
+  "surface": $surface,
+  "line": $line,
+  "black": $black,
+  "terracotta": $terracotta,
+  "blue": $blue,
+  "mustard": $mustard,
+  "green": $green,
+  "sand": $sand,
+  "ink": $ink,
+  "muted": $muted,
+);
+
+$font-family: 'Pretendard', Arial, Helvetica, sans-serif;
+$font-weight-black: 900;
+$font-weight-bold: 700;
+$text-action-label: clamp(.6875rem, .8cqw, .75rem);
+$heading-tracking: -.045em;
+$copy-tracking: .0625rem;
+$header-height: 4.5rem;
+$mobile-header-height: 3.75rem;
+$touch-target: 2.75rem;
+$hairline: .0625rem;
+$radius: .25rem;
+
+// Container-relative preferred size, bounded for readability and zoom.
+@function fluid($minimum, $maximum, $reference: 90rem) {
+  @return clamp(#{$minimum}, #{math.div($maximum, $reference) * 100cqw}, #{$maximum});
+}
+
+$space-1: .25rem;
+$space-2: fluid(.375rem, .5rem);
+$space-3: fluid(.5rem, .75rem);
+$space-4: fluid(.75rem, 1rem);
+$space-5: fluid(1rem, 1.25rem);
+$space-6: fluid(1rem, 1.5rem);
+$space-7: fluid(1.25rem, 1.75rem);
+$space-8: fluid(1.5rem, 2rem);
+$space-9: fluid(1.5rem, 2.25rem);
+$space-10: fluid(1.5rem, 2.5rem);
+$space-11: fluid(1.75rem, 2.75rem);
+$space-12: fluid(2rem, 3rem);
+$space-13: fluid(2rem, 3.25rem);
+$space-14: fluid(2.25rem, 3.5rem);
+$space-15: fluid(2.5rem, 3.75rem);
+$space-16: fluid(2.5rem, 4rem);
+$space-17: fluid(2.75rem, 4.25rem);
+$space-18: fluid(3rem, 4.5rem);
+$space-19: fluid(3rem, 4.75rem);
+$space-20: fluid(3.25rem, 5rem);
+$page-padding: clamp(1.5rem, 4cqw, 4rem);
+$mobile-padding: clamp(1.25rem, 4cqw, 1.5rem);
+
+$text-xs: .75rem;
+$text-sm: .875rem;
+$text-body: fluid(.9375rem, 1rem);
+$text-title: fluid(1rem, 1.25rem);
